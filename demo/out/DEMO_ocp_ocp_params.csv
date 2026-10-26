@@ -1,0 +1,2 @@
+label,E_final_V,E_tail_mean_V,E_head_mean_V,drift_V,t_start_s,t_end_s,n_points
+DEMO_ocp,-0.1825306542323465,-0.18213819799487138,-0.23631849781905778,0.0541802998241864,0.0,1800.0,361

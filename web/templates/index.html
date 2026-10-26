@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>科研出图工具 · 上传成图</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <h1>科研出图工具</h1>
+      <p class="sub">SEM 伪彩 · EIS 拟合成图 · 极化曲线 · 开路电位 OCP · 拉拔柱状图 · 色盲友好默认色</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <aside class="notice">
+      <strong>说明</strong>
+      <ul>
+        <li>上传仪器导出的真实 CSV / TXT / Excel / SEM 图即可出图；结果含 PNG（及 PDF、EIS 拟合参数表与残差图）。</li>
+        <li>仓库内 <code>demo/data/</code> 仅为<strong>合成 DEMO</strong>，可用来试功能，<strong>不可当作实验结果引用</strong>。</li>
+        <li>单文件上限 {{ max_mb }} MB；任务结果约 1 小时后自动清理。</li>
+        <li>EIS：默认 CPE 拟合（modulus 加权 χ²）；可选 Randles / Warburg / <strong>涂层双时间常数 coating</strong> / <strong>高频感抗 lr_cpe</strong>；Nyquist 角标参数表（含 stderr），另出残差图。</li>
+        <li>极化：可选自动 Tafel（估 Ecorr、βa/βc、外推 icorr）；OCP：E–t 曲线并标终值与漂移。</li>
+      </ul>
+    </aside>
+
+    <section class="card">
+      <form id="plot-form">
+        <fieldset>
+          <legend>图类型</legend>
+          <div class="type-row" id="type-row">
+            <label class="chip"><input type="radio" name="plot_type" value="eis" checked /> EIS 拟合 + Nyquist/Bode</label>
+            <label class="chip"><input type="radio" name="plot_type" value="polar" /> 极化曲线</label>
+            <label class="chip"><input type="radio" name="plot_type" value="ocp" /> 开路电位 OCP</label>
+            <label class="chip"><input type="radio" name="plot_type" value="sem" /> SEM 伪彩</label>
+            <label class="chip"><input type="radio" name="plot_type" value="pull" /> 拉拔柱状图</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>上传文件</legend>
+          <div class="drop" id="drop">
+            <input type="file" id="file" name="file" required />
+            <p id="drop-hint">拖拽到此处，或点击选择文件</p>
+            <p class="hint" id="accept-hint">EIS：CSV / TXT / Excel（Frequency + Zre/Zim 或 |Z|+相位）</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>通用参数</legend>
+          <div class="grid">
+            <label>标题 <input type="text" name="title" placeholder="可选" /></label>
+            <label>曲线标签 <input type="text" name="label" placeholder="默认用文件名" /></label>
+            <label>单色 <input type="color" name="color_picker" value="#0072B2" id="color_picker" />
+              <input type="text" name="color" id="color" placeholder="#0072B2 或留空用色板" /></label>
+            <label>色板
+              <select name="palette">
+                <option value="okabe" selected>okabe（色盲友好，默认）</option>
+                <option value="tableau">tableau</option>
+                <option value="viridis">viridis</option>
+              </select>
+            </label>
+            <label class="span2">多色（逗号分隔，优先于单色）
+              <input type="text" name="colors" placeholder="#0072B2,#E69F00,#009E73" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset id="opts-eis" class="type-opts">
+          <legend>EIS 选项</legend>
+          <div class="grid">
+            <label>拟合模型
+              <select name="fit">
+                <option value="cpe" selected>CPE（默认）Rs+(Rct∥CPE)</option>
+                <option value="randles">Randles Rs+(Rct∥Cdl)</option>
+                <option value="warburg">CPE+Warburg</option>
+                <option value="coating">涂层双时间常数 Rs+(R1∥Q1)+(R2∥Q2)</option>
+                <option value="lr_cpe">高频感抗 Rs+L+(Rct∥CPE)</option>
+                <option value="none">不拟合（仅画点）</option>
+              </select>
+            </label>
+            <label>加权
+              <select name="weighting">
+                <option value="modulus" selected>modulus（残差/|Z|，默认）</option>
+                <option value="unit">unit（绝对残差）</option>
+              </select>
+            </label>
+            <label>拟合线颜色
+              <input type="color" id="fit_color_picker" value="#000000" />
+              <input type="text" name="fit_color" id="fit_color" placeholder="留空则加深数据色" />
+            </label>
+            <label>布局
+              <select name="layout">
+                <option value="triple" selected>三栏 Nyquist + |Z| + phase</option>
+                <option value="dual">双栏 Nyquist + Bode</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset id="opts-sem" class="type-opts hidden">
+          <legend>SEM 选项</legend>
+          <div class="grid">
+            <label>Colormap
+              <select name="cmap">
+                {% for c in colormaps %}
+                <option value="{{ c }}" {% if c == 'viridis' %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" name="stretch" value="1" checked /> 百分位对比度拉伸</label>
+          </div>
+        </fieldset>
+
+        <fieldset id="opts-polar" class="type-opts hidden">
+          <legend>极化曲线选项</legend>
+          <div class="grid">
+            <label>模式
+              <select name="mode">
+                <option value="tafel" selected>半对数 E–log|i|</option>
+                <option value="linear">线性 E–i</option>
+                <option value="both">两者并排</option>
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" name="auto_tafel" value="1" checked /> 自动 Tafel 分析（Ecorr / βa·βc / icorr）</label>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="btn" class="primary">上传并出图</button>
+          <span id="status" class="status" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="card result hidden" id="result">
+      <h2>结果预览</h2>
+      <p id="result-meta" class="hint"></p>
+      <img id="preview" alt="出图预览" />
+      <div id="downloads" class="downloads"></div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>本地 / NAS 原型 v0.3 · 目标上线 jassyhong.top 科研工具 · 不编造实验数据</p>
+  </footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>

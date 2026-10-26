@@ -1,0 +1,8 @@
+.venv
+**/__pycache__
+**/*.pyc
+wheels
+_jobs
+demo/out
+*.tgz
+.git

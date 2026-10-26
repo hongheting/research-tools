@@ -1,0 +1,20 @@
+# 在 research-tools 根目录执行：
+#   docker compose -f web/docker-compose.yml up -d --build
+services:
+  research-tools-web:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+    image: research-tools-web:0.3
+    container_name: research-tools-web
+    ports:
+      - "8766:8766"
+    restart: unless-stopped
+    volumes:
+      - research-tools-jobs:/tmp/research-tools-jobs
+    environment:
+      - MPLCONFIGDIR=/tmp/matplotlib
+      - RESEARCH_TOOLS_JOBS=/tmp/research-tools-jobs
+
+volumes:
+  research-tools-jobs:

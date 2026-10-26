@@ -1,0 +1,24 @@
+[
+  {
+    "label": "sample",
+    "circuit": "cpe",
+    "description": "Rs + (Rct || CPE)  【默认】",
+    "params": {
+      "Rs": 1287.7369916478308,
+      "Rct": 89508.48896939732,
+      "Q": 8.747407971998017e-05,
+      "n": 0.6810575931039605
+    },
+    "units": {
+      "Rs": "ohm",
+      "Rct": "ohm",
+      "Q": "S·s^n",
+      "n": "-"
+    },
+    "chi2": 39816198.018510506,
+    "rmse": 748.8601480833868,
+    "n_points": 71,
+    "success": true,
+    "message": "`ftol` termination condition is satisfied."
+  }
+]

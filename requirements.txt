@@ -1,0 +1,7 @@
+# research-tools v0.1 — 本地科研出图工具
+matplotlib>=3.8
+numpy>=1.26
+pandas>=2.0
+pillow>=10.0
+openpyxl>=3.1
+scipy>=1.11

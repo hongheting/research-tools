@@ -1,0 +1,24 @@
+[
+  {
+    "label": "DEMO Randles",
+    "circuit": "cpe",
+    "description": "Rs + (Rct || CPE)  【默认】",
+    "params": {
+      "Rs": 19.539289829648226,
+      "Rct": 800.3605006089407,
+      "Q": 1.979598325349876e-05,
+      "n": 0.8520989594334998
+    },
+    "units": {
+      "Rs": "ohm",
+      "Rct": "ohm",
+      "Q": "S·s^n",
+      "n": "-"
+    },
+    "chi2": 359.88202905225216,
+    "rmse": 2.4490883645833477,
+    "n_points": 60,
+    "success": true,
+    "message": "`ftol` termination condition is satisfied."
+  }
+]

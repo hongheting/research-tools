@@ -1,0 +1,2 @@
+label,circuit,chi2,rmse,n_points,success,message,Rs,Rs_unit,Rct,Rct_unit,Q,Q_unit,n,n_unit
+DEMO Randles,cpe,359.88202905225216,2.4490883645833477,60,True,`ftol` termination condition is satisfied.,19.539289829648226,ohm,800.3605006089407,ohm,1.979598325349876e-05,S·s^n,0.8520989594334998,-

@@ -1,0 +1,2 @@
+label,circuit,chi2,rmse,n_points,success,message,Rs,Rs_unit,Rct,Rct_unit,Q,Q_unit,n,n_unit
+sample,cpe,39816198.018510506,748.8601480833868,71,True,`ftol` termination condition is satisfied.,1287.7369916478308,ohm,89508.48896939732,ohm,8.747407971998017e-05,S·s^n,0.6810575931039605,-

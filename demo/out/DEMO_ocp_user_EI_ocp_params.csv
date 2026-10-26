@@ -1,0 +1,2 @@
+label,E_final_V,E_tail_mean_V,E_head_mean_V,drift_V,t_start_s,t_end_s,n_points,time_synthetic,dt
+DEMO_ocp_E_I,-0.170835480093956,-0.17085081562399865,-0.17062079310417158,-0.00023002251982706667,0.0,599.0,600,True,1.0
